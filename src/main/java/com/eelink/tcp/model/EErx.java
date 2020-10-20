@@ -43,7 +43,7 @@ public class EErx implements Cloneable {
 	public int getIndex() {
 		return m_index;
 	}
-	
+
 	/**
 	 * 解析 8 个字节（包含）以下有符号整数
 	 * @param length
@@ -51,9 +51,14 @@ public class EErx implements Cloneable {
 	 */
 	public Number parseInt( int length )
 	{
-		return parseNumber( length, true );
+		long value = parseUInt( length ).longValue();
+		int bits = length * 8;
+		if ( ( value & ( 1L << ( bits - 1 ) ) ) > 0 )
+			value = ~ ( value );
+
+		return value;
 	}
-	
+
 	/**
 	 * 解析 8 个字节（不包含）以下无符号整数
 	 * @param length
@@ -62,11 +67,6 @@ public class EErx implements Cloneable {
 	public Number parseUInt( int length )
 	{
 		if ( length == 8 ) return 0;
-		return parseNumber( length, false );
-	}
-
-	public Number parseNumber( int length, boolean sign )
-	{
 		long value = 0;
 		if ( this.m_error != 0 ) return value;
 		if ( length > 8 || this.m_size < length ) return value;
@@ -74,7 +74,7 @@ public class EErx implements Cloneable {
 		for ( int i = 0; i < length; i ++ )
 		{
 			value <<= 8;
-			value += ( sign ? this.m_data[this.m_index ++] : ( this.m_data[this.m_index ++] & 0xff ) );
+			value += ( this.m_data[this.m_index ++] & 0xff );
 		}
 		this.m_size -= length;
 
