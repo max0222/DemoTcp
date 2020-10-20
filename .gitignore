@@ -1,0 +1,9 @@
+/.git/*
+/.idea/*
+/.settings/*
+/Log/*
+/out/*
+/classes/*
+/target/*
+/META-INF/*
+/src/test/*
