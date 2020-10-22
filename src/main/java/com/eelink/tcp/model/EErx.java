@@ -1,5 +1,6 @@
 package com.eelink.tcp.model;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 public class EErx implements Cloneable {
@@ -51,10 +52,17 @@ public class EErx implements Cloneable {
 	 */
 	public Number parseInt( int length )
 	{
-		long value = parseUInt( length ).longValue();
 		int bits = length * 8;
+		long value = parseUInt( length ).longValue();
 		if ( ( value & ( 1L << ( bits - 1 ) ) ) > 0 )
-			value = ~ ( value );
+			if ( length == 1 )
+				value -= 0xff + 1;
+			else if ( length == 2 )
+				value -= 0xffff + 1;
+			else if ( length == 4 )
+				value -= 0xffffffffL + 1;
+			else
+				value = ( BigInteger.valueOf( value ).xor( BigInteger.ONE.shiftLeft( bits ).subtract( BigInteger.ONE ) ) ).not().longValue();
 
 		return value;
 	}
